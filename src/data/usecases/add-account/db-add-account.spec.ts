@@ -37,4 +37,16 @@ describe('DATA LAYER ADD ACCOUNT USE CASE', () => {
     await sut.addAccount(account)
     expect(encryptSpy).toHaveBeenCalledWith('valid_password')
   })
+
+  test('Should throws if Encrypter throws', async () => {
+    const { sut, encryptStub } = makeSut()
+    jest.spyOn(encryptStub, 'encrypt').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    const account = {
+      name: 'valid_name',
+      email: 'valid_email@gmail.com',
+      password: 'valid_password'
+    }
+    const promise = sut.addAccount(account)
+    await expect(promise).rejects.toThrow()
+  })
 })
