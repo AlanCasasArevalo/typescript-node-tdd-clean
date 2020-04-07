@@ -19,7 +19,7 @@ const makeEncrypter = (): Encrypter => {
 
 const makeAddAccountRepository = (): AddAccountRepository => {
   class AddAccountRepositoryStub implements AddAccountRepository {
-    async addAccount (accountData: AddAccountModel): Promise<AccountModel> {
+    async add (accountData: AddAccountModel): Promise<AccountModel> {
       const fakeAccount = {
         id: 'valid_id',
         name: 'valid_name',
@@ -53,7 +53,7 @@ describe('DATA LAYER ADD ACCOUNT USE CASE', () => {
       email: 'valid_email@gmail.com',
       password: 'valid_password'
     }
-    await sut.addAccount(account)
+    await sut.add(account)
     expect(encryptSpy).toHaveBeenCalledWith('valid_password')
   })
 
@@ -65,19 +65,31 @@ describe('DATA LAYER ADD ACCOUNT USE CASE', () => {
       email: 'valid_email@gmail.com',
       password: 'valid_password'
     }
-    const promise = sut.addAccount(account)
+    const promise = sut.add(account)
     await expect(promise).rejects.toThrow()
   })
 
-  test('Should call AddAccountRepository with correct values', async () => {
+  test('Should throws if AddAccountRepository throws', async () => {
     const { sut, addAccountRepositoryStub } = makeSut()
-    const addAccountSpy = jest.spyOn(addAccountRepositoryStub, 'addAccount')
+    jest.spyOn(addAccountRepositoryStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
     const account = {
       name: 'valid_name',
       email: 'valid_email@gmail.com',
       password: 'valid_password'
     }
-    await sut.addAccount(account)
+    const promise = sut.add(account)
+    await expect(promise).rejects.toThrow()
+  })
+
+  test('Should call AddAccountRepository with correct values', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut()
+    const addAccountSpy = jest.spyOn(addAccountRepositoryStub, 'add')
+    const account = {
+      name: 'valid_name',
+      email: 'valid_email@gmail.com',
+      password: 'valid_password'
+    }
+    await sut.add(account)
     expect(addAccountSpy).toHaveBeenCalledWith({
       name: 'valid_name',
       email: 'valid_email@gmail.com',
