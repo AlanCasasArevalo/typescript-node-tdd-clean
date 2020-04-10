@@ -12,8 +12,7 @@ export class AccountMongoRepository implements AddAccountRepository {
     // Obtenemos de la insercion el resultado en la primera posicion del array nos devuelve el dato insertado correctamente.
     const account = result.ops[0]
     // Cambiamos el ._id que nos llega desde mongoDb a .id
-    const { _id, ...accountWithoutId } = account
-    const accountToReturn = Object.assign({}, accountWithoutId, { id: _id })
+    const accountToReturn = MongoHelper.map(account)
     // Devolvemos el resultado de nuestra insercion correcta.
     return await new Promise(resolve => resolve(accountToReturn))
   }
