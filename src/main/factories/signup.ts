@@ -10,10 +10,11 @@ import { EmailValidatorAdapter } from '../../utils/email-validator-adapter'
 import { DbAddAccount } from '../../data/usecases/add-account/db-add-account'
 import { AccountMongoRepository } from '../../infra/db/mongodb/account-repository/account'
 import { LogControllerDecorator } from '../decorators/log'
+import { LogMongoRepository } from '../../infra/db/mongodb/log-repository/LogMongoRepository'
 
 export const makeSignUpController = (): Controller => {
   const signUpController = new SignUpController(makeEmailValidator(), makeDBAddAccount())
-  return new LogControllerDecorator(signUpController)
+  return new LogControllerDecorator(signUpController, makeLogErrorRepository())
 }
 
 const makeEmailValidator = (): EmailValidator => {
@@ -34,4 +35,9 @@ const makeAddAccountRepository = (): AddAccountRepository => {
 const makeEncrypter = (): Encrypter => {
   const encrypter = new CryptAdapter(10)
   return encrypter
+}
+
+const makeLogErrorRepository = (): LogMongoRepository => {
+  const logErrorRepository = new LogMongoRepository()
+  return logErrorRepository
 }
