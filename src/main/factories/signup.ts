@@ -11,9 +11,10 @@ import { DbAddAccount } from '../../data/usecases/add-account/db-add-account'
 import { AccountMongoRepository } from '../../infra/db/mongodb/account-repository/account'
 import { LogControllerDecorator } from '../decorators/log'
 import { LogMongoRepository } from '../../infra/db/mongodb/log-repository/LogMongoRepository'
+import { makeSignUpValidation } from './signup-validations'
 
 export const makeSignUpController = (): Controller => {
-  const signUpController = new SignUpController(makeEmailValidator(), makeDBAddAccount())
+  const signUpController = new SignUpController(makeEmailValidator(), makeDBAddAccount(), makeSignUpValidation())
   return new LogControllerDecorator(signUpController, makeLogErrorRepository())
 }
 
